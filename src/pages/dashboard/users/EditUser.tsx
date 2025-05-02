@@ -2,11 +2,17 @@ import { createEffect, createSignal, Show } from 'solid-js'
 import { useNavigate, useParams } from '@solidjs/router'
 import { useUsers } from '../../../hooks/useUsers'
 import { Client, Status } from '../../../types/users'
-
 export default function EditUser() {
 	const params = useParams<{ id?: string }>() // Явно указываем тип параметра
 	const navigate = useNavigate()
-	const { currentClient, loadClient, updateClient, createClient } = useUsers()
+	const {
+		currentClient,
+		loadClient,
+		updateClient,
+		createClient,
+		getClientLocation,
+		updateClientLocation,
+	} = useUsers()
 
 	const [form, setForm] = createSignal<Partial<Client>>({
 		firstName: '',
@@ -15,6 +21,8 @@ export default function EditUser() {
 		email: '',
 		phone: '',
 		status: Status.CLIENT,
+		latitude: '',
+		longtitude: '',
 	})
 	const [loading, setLoading] = createSignal(false)
 	const [error, setError] = createSignal('')
@@ -25,6 +33,7 @@ export default function EditUser() {
 		if (params.id && params.id !== 'new') {
 			setIsNewUser(false)
 			await loadClient(Number(params.id))
+			await getClientLocation(Number(params.id))
 			setForm(currentClient() || {})
 		} else {
 			setIsNewUser(true)
@@ -35,6 +44,8 @@ export default function EditUser() {
 				email: '',
 				phone: '',
 				status: Status.CLIENT,
+				longtitude: '',
+				latitude: '',
 			})
 		}
 	})
@@ -174,6 +185,31 @@ export default function EditUser() {
 							))}
 						</select>
 					</div>
+					<div>
+						<label class='block text-sm font-medium text-gray-700 mb-1'>
+							Longtitude *
+						</label>
+						<input
+							// type='tel'
+							value={form()?.longtitude || ''}
+							onInput={handleChange('longtitude')}
+							required
+							class='w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500'
+						/>
+					</div>
+					<div>
+						<label class='block text-sm font-medium text-gray-700 mb-1'>
+							Latitude *
+						</label>
+
+						<input
+							// type='tel'
+							value={form()?.latitude || ''}
+							onInput={handleChange('latitude')}
+							required
+							class='w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500'
+						/>
+					</div>
 				</div>
 
 				<div class='flex justify-end space-x-3 pt-4'>
@@ -221,6 +257,8 @@ export default function EditUser() {
 					</button>
 				</div>
 			</form>
+			 <script src="https://api-maps.yandex.ru/v3/?apikey=YOUR_API_KEY&lang=ru_RU"></script>
+        
 		</div>
 	)
 }

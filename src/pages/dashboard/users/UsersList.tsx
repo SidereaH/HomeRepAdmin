@@ -1,6 +1,7 @@
 import { createEffect, createSignal, For, Show } from 'solid-js'
 import { useUsers } from '../../../hooks/useUsers'
 import { A, useNavigate } from '@solidjs/router'
+import { MapComponent } from '../../../components/ui/MapComponents'
 
 export default function UsersList() {
 	const { clients, deleteClient, refetchClients } = useUsers()
@@ -106,6 +107,15 @@ export default function UsersList() {
 						</For>
 					</tbody>
 				</table>
+			</div>
+			<div>
+				{/* <h1>Яндекс Карты в SolidJS</h1> */}
+				<MapComponent
+					width='800px'
+					height='500px'
+					center={[37.6176, 55.7558]}
+					zoom={12}
+				/>
 			</div>
 		</div>
 	)

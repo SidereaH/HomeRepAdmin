@@ -14,6 +14,10 @@ export function useUsers() {
 
 	const loadClient = async (id: number) => {
 		const client = await usersApi.getClientById(id)
+		const geo = await usersApi.getClientLocation(id)
+		client.longtitude = String(geo.lng)
+		client.latitude = String(geo.lat)
+		console.log(client)
 		setCurrentClient(client)
 		return client
 	}

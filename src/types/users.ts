@@ -6,6 +6,8 @@ export interface Client {
 	email?: string
 	phone?: string
 	status?: Status
+	latitude?: string
+	longtitude?: string
 }
 
 export enum Status {
