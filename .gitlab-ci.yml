@@ -1,0 +1,72 @@
+stages:
+  - clean_latest
+  - build
+  - deploy
+
+variables:
+  CI_REGISTRY: 'registry.gitlab.com'
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  CI_REGISTRY_IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH
+build:
+  stage: build
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
+  variables:
+
+    #CI_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
+    - docker tag $CI_REGISTRY_IMAGE:$IMAGE_TAG $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+    - echo $IMAGE_TAG > adminpanel.tag
+  artifacts:
+    paths:
+      - adminpanel.tag
+  only:
+    - main
+
+# trigger_deploy:
+#   stage: deploy
+#   script:
+#     - 'curl --request POST --form token=$DEPLOY_REPO_TRIGGER_TOKEN --form  ref=main --form "variables[ORDER_SERVICE_APP_TAG]=$CI_COMMIT_SHORT_SHA" https://gitlab.com/api/v4/projects/68997048/trigger/pipeline'
+#   only:
+#     - main
+#
+#deploy_docker_stage:
+#  environment:
+#    name: stage
+#    url: https://someurl
+#  image: docker:19.03.1
+#  services:
+#    - docker:19.03.1-dind
+#  stage: deploy
+#  variables:
+#    DOCKER_HOST: "tcp://${DOCKER_HOST}"
+#  before_script:
+#    - apk add jq
+#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#  script:
+#  - export CONFIG=$(echo $CONFIG1_STAGE | jq -c) && docker stack deploy --with-registry-auth -c ./docker/stage/app.yml app
+deploy:
+  stage: deploy
+  retry:
+    max: 2 # Максимальное количество попыток
+    when:
+      - script_failure # Перезапускать при ошибке в script
+      - api_failure # Перезапускать при проблемах с API GitLab
+      - runner_system_failure
+  variables:
+    APP_TAG: $CI_COMMIT_SHORT_SHA
+  script:
+    - sudo docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+    # Генерация docker-compose файла
+    - envsubst < docker-compose.prod.yml > docker-compose.gen.yml
+
+    # Деплой в Docker Swarm
+    - sudo docker stack deploy -c docker-compose.gen.yml homerep-admin
+  tags:
+    - cloudru

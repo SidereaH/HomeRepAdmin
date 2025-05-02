@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  admin-panel-frontend:
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    image: registry.gitlab.com/homerep/adminpanel:${APP_TAG}
+    environment:
+      - VITE_MAIN_API_URL=http://82.202.143.3:8081
+    ports:
+      - target: 3000
+        published: 3000
+        mode: host
+
+networks:
+  homerep-network:
+    driver: overlay
+    attachable: true
+    driver_opts:
+      encrypted: ''
+
+volumes:
+  driver: local
