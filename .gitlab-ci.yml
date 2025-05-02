@@ -64,9 +64,9 @@ deploy:
     - sudo docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
     # Генерация docker-compose файла
-    # - envsubst < docker-compose.prod.yml > docker-compose.gen.yml
+    - envsubst < docker-compose.prod.yml > docker-compose.gen.yml
 
     # Деплой в Docker Swarm
-    - sudo docker stack deploy -c docker-compose.prod.yml homerep-admin
+    - sudo docker stack deploy -c docker-compose.gen.yml homerep-admin
   tags:
     - cloudru

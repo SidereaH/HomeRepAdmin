@@ -21,5 +21,3 @@ networks:
     driver_opts:
       encrypted: ''
 
-volumes:
-  driver: local
