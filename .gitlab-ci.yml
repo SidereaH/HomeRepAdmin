@@ -70,6 +70,13 @@ deploy:
       sudo docker rm $CONTAINER_NAME;
       fi
 
+    - if sudo docker ps -a | grep -q homerep-admin; then
+      sudo docker stop /homerep-admin;
+      sudo docker rm /homerep-admin;
+      fi
+
+    - sudo docker rmi $(sudo docker images --filter=reference='registry.gitlab.com/homerep/adminpanel:*' -q) || true
+
     # Pull the latest image
     - sudo docker pull registry.gitlab.com/homerep/adminpanel:${APP_TAG}
 
