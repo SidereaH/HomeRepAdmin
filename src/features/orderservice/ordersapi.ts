@@ -1,4 +1,3 @@
-import { auth } from '../../stores/authStore'
 import type {
 	Order,
 	Category,
@@ -32,7 +31,7 @@ async function fetchApi<T>(
 		method,
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization: `Bearer ${auth.accessToken}`,
+			Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
 		},
 		body: body ? JSON.stringify(body) : undefined,
 	})
