@@ -79,6 +79,6 @@ deploy:
     - sudo docker pull registry.gitlab.com/homerep/adminpanel:${APP_TAG}
 
     # Run new container with cleanup on stop and restart policy
-    - sudo docker run -d --name $CONTAINER_NAME --restart unless-stopped -p 3000:3000 registry.gitlab.com/homerep/adminpanel:${APP_TAG}
+    - sudo docker run -d --name $CONTAINER_NAME --restart unless-stopped -p 3000:3000 -e "VITE_MAIN_API_URL=${VITE_MAIN_API_URL}" registry.gitlab.com/homerep/adminpanel:${APP_TAG}
   tags:
     - cloudru
