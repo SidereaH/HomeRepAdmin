@@ -8,16 +8,14 @@ import OrdersList from './pages/dashboard/orders/OrderList'
 import OrderForm from './pages/dashboard/orders/OrderForm'
 import CategoriesList from './pages/dashboard/orders/CategoriesList'
 import PaymentTypes from './pages/dashboard/orders/PaymentTypesList'
+import DashboardPage from './pages/dashboard/DashboadrPage'
 
 const App: Component = () => {
 	return (
 		<Router>
 			<Route path='/login' component={LoginPage} />
 			{/* <ProtectedRoute path='/dashboard' component={DashboardPage} /> */}
-			<ProtectedRoute
-				path='/dashboard'
-				component={() => <h1>Hello World!</h1>}
-			/>
+			<ProtectedRoute path='/dashboard' component={DashboardPage} />
 			<Route path='/hello-world' component={() => <h1>Hello World!</h1>} />
 			<ProtectedRoute path='/users' component={UsersList} />
 			<ProtectedRoute path='/users/:id?' component={EditUser} />
