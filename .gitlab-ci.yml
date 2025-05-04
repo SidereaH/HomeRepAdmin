@@ -70,10 +70,8 @@ deploy:
       sudo docker rm $CONTAINER_NAME;
       fi
 
-    - if sudo docker ps -a | grep -q homerep-admin; then
-      sudo docker stop /homerep-admin;
-      sudo docker rm /homerep-admin;
-      fi
+    - sudo docker stop /homerep-admin || true
+    - sudo docker rm /homerep-admin || true
 
     - sudo docker rmi $(sudo docker images --filter=reference='registry.gitlab.com/homerep/adminpanel:*' -q) || true
 
