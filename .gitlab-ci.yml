@@ -67,6 +67,7 @@ deploy:
     - envsubst < docker-compose.prod.yml > docker-compose.gen.yml
 
     # Деплой в Docker Swarm
-    - sudo docker stack deploy -c docker-compose.gen.yml homerep-admin
+    # - sudo docker stack deploy -c docker-compose.gen.yml homerep-admin
+    - sudo docker run -p 3000:3000 registry.gitlab.com/homerep/adminpanel:${APP_TAG}
   tags:
     - cloudru
