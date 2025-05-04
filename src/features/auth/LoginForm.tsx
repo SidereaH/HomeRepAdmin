@@ -1,7 +1,9 @@
 // src/features/auth/LoginForm.tsx
 import { createSignal } from 'solid-js'
+import { useNavigate } from '@solidjs/router'
 import type { SigninRequest } from '../../types/auth'
 import { signin } from './api'
+import { authActions } from '../../stores/authStore' // Импортируем actions из хранилища
 
 export const LoginForm = () => {
 	const [form, setForm] = createSignal<SigninRequest>({
@@ -11,6 +13,7 @@ export const LoginForm = () => {
 
 	const [error, setError] = createSignal('')
 	const [loading, setLoading] = createSignal(false)
+	const navigate = useNavigate()
 
 	const handleChange = (e: Event) => {
 		const target = e.target as HTMLInputElement
@@ -24,10 +27,14 @@ export const LoginForm = () => {
 
 		try {
 			const response = await signin(form())
-			localStorage.setItem('accessToken', response.accessToken)
-			localStorage.setItem('refreshToken', response.refreshToken)
-			// переход в админку
-			window.location.href = '/dashboard'
+
+			authActions.login(
+				response.accessToken,
+				response.refreshToken,
+				response.userPhone
+			)
+
+			navigate('/dashboard', { replace: true })
 		} catch (err: any) {
 			setError(err.message)
 		} finally {

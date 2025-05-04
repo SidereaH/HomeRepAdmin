@@ -1,3 +1,4 @@
+import { auth } from '../../stores/authStore'
 import type {
 	Client,
 	GeoPair,
@@ -30,7 +31,7 @@ async function fetchApi<T>(
 		method,
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+			Authorization: `Bearer ${auth.accessToken}`,
 		},
 		body: body ? JSON.stringify(body) : undefined,
 	})

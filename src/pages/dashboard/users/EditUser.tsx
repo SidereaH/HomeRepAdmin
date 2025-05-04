@@ -1,9 +1,11 @@
 import { createEffect, createSignal, Show } from 'solid-js'
 import { useNavigate, useParams } from '@solidjs/router'
 import { useUsers } from '../../../hooks/useUsers'
+import { useAuth } from '../../../hooks/useAuth'
 import { Client, Status } from '../../../types/users'
+
 export default function EditUser() {
-	const params = useParams<{ id?: string }>() // Явно указываем тип параметра
+	const params = useParams<{ id?: string }>()
 	const navigate = useNavigate()
 	const {
 		currentClient,
@@ -11,8 +13,8 @@ export default function EditUser() {
 		updateClient,
 		createClient,
 		getClientLocation,
-		updateClientLocation,
 	} = useUsers()
+	const { registerWithRole } = useAuth()
 
 	const [form, setForm] = createSignal<Partial<Client>>({
 		firstName: '',
@@ -28,7 +30,7 @@ export default function EditUser() {
 	const [error, setError] = createSignal('')
 	const [isNewUser, setIsNewUser] = createSignal(!params.id)
 
-	// Загрузка данных пользователя при монтировании
+	// Load user data when component mounts
 	createEffect(async () => {
 		if (params.id && params.id !== 'new') {
 			setIsNewUser(false)
@@ -50,19 +52,6 @@ export default function EditUser() {
 		}
 	})
 
-	// Загрузка данных пользователя при монтировании
-	createEffect(async () => {
-		if (params.id) {
-			if (params.id === 'new') {
-				setIsNewUser(true)
-			} else {
-				setIsNewUser(false)
-				await loadClient(Number(params.id))
-				setForm(currentClient() || {})
-			}
-		}
-	})
-
 	const handleSubmit = async (e: Event) => {
 		e.preventDefault()
 		setLoading(true)
@@ -70,7 +59,25 @@ export default function EditUser() {
 
 		try {
 			if (isNewUser()) {
-				await createClient(form() as Omit<Client, 'id'>)
+				// Prepare data for auth API
+				const authData = {
+					username: `${form()?.firstName} ${form()?.lastName}`.trim(),
+					email: form()?.email || '',
+					phone: form()?.phone || '',
+					password: generateTempPassword(), // Implement this function
+					status: form()?.status || Status.CLIENT,
+				}
+
+				// First create auth record
+				const authResponse = await registerWithRole(authData)
+
+				// Then create client record
+				const clientData = {
+					...form(),
+					authId: authResponse.userPhone, // or whatever identifier you get back
+				} as Omit<Client, 'id'>
+
+				// await createClient(clientData)
 			} else {
 				await updateClient(Number(params.id), form())
 			}
@@ -86,6 +93,11 @@ export default function EditUser() {
 		} finally {
 			setLoading(false)
 		}
+	}
+
+	// Generate a temporary password for new users
+	const generateTempPassword = (): string => {
+		return Math.random().toString(36).slice(-8) + 'A1!' // Simple temp password
 	}
 
 	const handleChange = (field: keyof Client) => (e: Event) => {
@@ -105,7 +117,7 @@ export default function EditUser() {
 
 			<form onSubmit={handleSubmit} class='space-y-6'>
 				<div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
-					{/* Основные поля */}
+					{/* Basic fields */}
 					<div>
 						<label class='block text-sm font-medium text-gray-700 mb-1'>
 							First Name *
@@ -185,25 +197,24 @@ export default function EditUser() {
 							))}
 						</select>
 					</div>
+
 					<div>
 						<label class='block text-sm font-medium text-gray-700 mb-1'>
-							Longtitude *
+							Longitude *
 						</label>
 						<input
-							// type='tel'
 							value={form()?.longtitude || ''}
 							onInput={handleChange('longtitude')}
 							required
 							class='w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500'
 						/>
 					</div>
+
 					<div>
 						<label class='block text-sm font-medium text-gray-700 mb-1'>
 							Latitude *
 						</label>
-
 						<input
-							// type='tel'
 							value={form()?.latitude || ''}
 							onInput={handleChange('latitude')}
 							required
@@ -257,8 +268,6 @@ export default function EditUser() {
 					</button>
 				</div>
 			</form>
-			 <script src="https://api-maps.yandex.ru/v3/?apikey=YOUR_API_KEY&lang=ru_RU"></script>
-        
 		</div>
 	)
 }
