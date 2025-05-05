@@ -8,11 +8,12 @@ export const ProtectedRoute: Component<{
 	component: Component
 }> = props => {
 	const hasToken = () => !!localStorage.getItem('accessToken')
+	console.log(hasToken)
 	return (
 		<Route
 			path={props.path}
 			component={() => (
-				<Show when={hasToken} fallback={<Navigate href='/login' />}>
+				<Show when={hasToken()} fallback={<Navigate href='/login' />}>
 					<props.component />
 				</Show>
 			)}
