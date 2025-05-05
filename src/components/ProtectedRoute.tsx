@@ -8,7 +8,6 @@ export const ProtectedRoute: Component<{
 	component: Component
 }> = props => {
 	const hasToken = () => !!localStorage.getItem('accessToken')
-	console.log(hasToken)
 	return (
 		<Route
 			path={props.path}
