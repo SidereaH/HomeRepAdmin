@@ -14,7 +14,12 @@ export function useOrders() {
 	const [orders, { refetch: refetchOrders }] = createResource(
 		ordersApi.getAllOrders
 	)
-	const [currentOrder, setCurrentOrder] = createSignal<Order | null>(null)
+
+	// Текущий заказ
+	const [
+		currentOrder,
+		{ mutate: mutateCurrentOrder, refetch: refetchCurrentOrder },
+	] = createResource<Order | null>(() => null)
 
 	// Категории
 	const [categories, { refetch: refetchCategories }] = createResource(
@@ -37,22 +42,32 @@ export function useOrders() {
 	const [assignmentResult, setAssignmentResult] =
 		createSignal<AssignResponse | null>(null)
 
-	// Добавляем отсутствующий метод updateOrder
+	// Метод для загрузки заказа по ID
+	const fetchOrderById = async (id: number): Promise<void> => {
+		try {
+			const order = await ordersApi.getOrderById(id)
+			mutateCurrentOrder(order)
+		} catch (error) {
+			console.error('Failed to fetch order:', error)
+			mutateCurrentOrder(null)
+		}
+	}
+
+	// Метод для обновления заказа
 	const updateOrder = async (id: number, order: Order): Promise<void> => {
-		// Здесь должна быть реализация обновления заказа
-		// Временно используем заглушку
-		console.log(`Updating order ${id}`, order)
+		await ordersApi.updateOrder(id, order)
 		await refetchOrders()
+		await refetchCurrentOrder()
 	}
 
 	return {
 		// Заказы
 		orders,
 		currentOrder,
-		setCurrentOrder,
+		fetchOrderById,
 		refetchOrders,
 		createOrder: ordersApi.createOrder,
-		updateOrder, // Добавляем метод
+		updateOrder,
 
 		// Работники
 		findWorker: async (params: FindWorkerParams) => {

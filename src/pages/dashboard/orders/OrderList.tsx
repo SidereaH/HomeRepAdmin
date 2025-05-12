@@ -104,6 +104,13 @@ export default function OrdersList() {
 											>
 												View
 											</button>
+											<button
+												onClick={() => navigate(`/orders/${order.id}/edit`)}
+												class='text-blue-600 hover:text-blue-900'
+											>
+												Edit
+											</button>
+
 											<Show when={!order.accepted}>
 												<button
 													onClick={() => handleFindWorker(order.id)}

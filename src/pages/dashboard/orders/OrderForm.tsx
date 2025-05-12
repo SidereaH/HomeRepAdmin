@@ -7,16 +7,22 @@ import Spinner from '../../../components/ui/Spinner'
 const OrderForm: Component = () => {
 	const params = useParams()
 	const navigate = useNavigate()
-	const { currentOrder, categories, payments, createOrder, updateOrder } =
-		useOrders()
+	const {
+		currentOrder,
+		categories,
+		payments,
+		createOrder,
+		updateOrder,
+		fetchOrderById,
+	} = useOrders()
 
 	const [form, setForm] = createSignal<Partial<Order>>({})
 	const [loading, setLoading] = createSignal(false)
 	const [error, setError] = createSignal('')
 
 	createEffect(() => {
-		if (params.id && currentOrder()) {
-			setForm(currentOrder()!)
+		if (params.id) {
+			fetchOrderById(Number(params.id))
 		} else {
 			setForm({
 				description: '',
@@ -32,6 +38,12 @@ const OrderForm: Component = () => {
 				paymentType: payments()?.[0],
 				category: categories()?.[0],
 			})
+		}
+	})
+
+	createEffect(() => {
+		if (params.id && currentOrder()) {
+			setForm(currentOrder()!)
 		}
 	})
 
