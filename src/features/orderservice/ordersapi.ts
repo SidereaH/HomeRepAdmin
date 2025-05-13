@@ -54,7 +54,7 @@ export const ordersApi = {
 	getOrderById: (id: number): Promise<Order> =>
 		fetchApi<Order>(`/orders/order/${id}`),
 	updateOrder: (id: number, order: Order): Promise<Order> =>
-		fetchApi<Order>(`/orders/${id}`, 'PUT', order),
+		fetchApi<Order>(`/orders`, 'PUT', order),
 	findWorker: (params: FindWorkerParams): Promise<number> =>
 		fetchApi<number>('/orders/order/findWorker', 'POST', null, {
 			orderID: params.orderId,
@@ -72,7 +72,8 @@ export const ordersApi = {
 
 	createCategory: (category: Omit<Category, 'id'>): Promise<Category> =>
 		fetchApi<Category>('/categories', 'POST', category),
-
+	deleteCategory: (categoryId: number): Promise<void> =>
+		fetchApi<void>(`/categories/${categoryId}`, 'DELETE'),
 	// Платежи
 	getAllPayments: (): Promise<PaymentType[]> =>
 		fetchApi<PaymentType[]>('/payments'),

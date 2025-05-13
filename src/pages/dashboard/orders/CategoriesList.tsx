@@ -3,10 +3,14 @@ import { useNavigate } from '@solidjs/router'
 import { Category } from '../../../types/orders'
 import { ordersApi } from '../../../features/orderservice/ordersapi'
 import CreateCategoryModal from './CreateCategoryModal'
+import EditCategoryModal from '../../../components/ui/EditCategoryModal'
 
 export default function CategoriesList() {
 	const [categories, { refetch }] = createResource(ordersApi.getAllCategories)
 	const [showModal, setShowModal] = createSignal(false)
+	const [editingCategory, setEditingCategory] = createSignal<Category | null>(
+		null
+	)
 	const [error, setError] = createSignal('')
 	const navigate = useNavigate()
 
@@ -17,6 +21,13 @@ export default function CategoriesList() {
 			await refetch()
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Failed to create category')
+		}
+	}
+
+	const handleDelete = async (id: number) => {
+		if (confirm('Are you sure you want to delete this category?')) {
+			await ordersApi.deleteCategory(id)
+			await refetch()
 		}
 	}
 
@@ -52,6 +63,9 @@ export default function CategoriesList() {
 							<th class='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
 								Best Employee
 							</th>
+							<th class='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+								Actions
+							</th>
 						</tr>
 					</thead>
 					<tbody class='bg-white divide-y divide-gray-200'>
@@ -69,6 +83,20 @@ export default function CategoriesList() {
 									</td>
 									<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
 										{category.bestEmployeeId || '-'}
+									</td>
+									<td class='px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2'>
+										<button
+											onClick={() => setEditingCategory(category)}
+											class='text-blue-600 hover:underline'
+										>
+											Edit
+										</button>
+										<button
+											onClick={() => handleDelete(category.id)}
+											class='text-red-600 hover:underline'
+										>
+											Delete
+										</button>
 									</td>
 								</tr>
 							)}
