@@ -15,11 +15,8 @@ export function useOrders() {
 		ordersApi.getAllOrders
 	)
 
-	// Текущий заказ
-	const [
-		currentOrder,
-		{ mutate: mutateCurrentOrder, refetch: refetchCurrentOrder },
-	] = createResource<Order | null>(() => null)
+	// Текущий заказ (используем сигнал вместо ресурса для простоты)
+	const [currentOrder, setCurrentOrder] = createSignal<Order | null>(null)
 
 	// Категории
 	const [categories, { refetch: refetchCategories }] = createResource(
@@ -46,10 +43,10 @@ export function useOrders() {
 	const fetchOrderById = async (id: number): Promise<void> => {
 		try {
 			const order = await ordersApi.getOrderById(id)
-			mutateCurrentOrder(order)
+			setCurrentOrder(order)
 		} catch (error) {
 			console.error('Failed to fetch order:', error)
-			mutateCurrentOrder(null)
+			setCurrentOrder(null)
 		}
 	}
 
@@ -57,13 +54,14 @@ export function useOrders() {
 	const updateOrder = async (id: number, order: Order): Promise<void> => {
 		await ordersApi.updateOrder(id, order)
 		await refetchOrders()
-		await refetchCurrentOrder()
+		setCurrentOrder(order)
 	}
 
 	return {
 		// Заказы
 		orders,
 		currentOrder,
+		setCurrentOrder, // Добавляем setter в возвращаемый объект
 		fetchOrderById,
 		refetchOrders,
 		createOrder: ordersApi.createOrder,
