@@ -52,7 +52,7 @@ export const ordersApi = {
 	getAllOrders: (): Promise<Order[]> => fetchApi<Order[]>('/orders'),
 
 	getOrderById: (id: number): Promise<Order> =>
-		fetchApi<Order>(`/orders/${id}`),
+		fetchApi<Order>(`/orders/order/${id}`),
 	updateOrder: (id: number, order: Order): Promise<Order> =>
 		fetchApi<Order>(`/orders/${id}`, 'PUT', order),
 	findWorker: (params: FindWorkerParams): Promise<number> =>
