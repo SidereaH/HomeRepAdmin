@@ -10,6 +10,7 @@ import CategoriesList from './pages/dashboard/orders/CategoriesList'
 import PaymentTypes from './pages/dashboard/orders/PaymentTypesList'
 import DashboardPage from './pages/dashboard/DashboadrPage'
 import OrderDetail from './pages/dashboard/orders/OrderDetail'
+import ConfirmAssignment from './pages/dashboard/orders/ConfirmAssignment'
 
 const App: Component = () => (
 	<Router>
@@ -28,6 +29,10 @@ const App: Component = () => (
 		<ProtectedRoute path='/orders/payments' component={PaymentTypes} />
 		{/* Редирект с корня */}
 		<Route path='/' component={() => <Navigate href='/dashboard' />} />
+		<Route
+			path='/order/:orderId/assign/:employeeId'
+			component={ConfirmAssignment}
+		/>
 	</Router>
 )
 
