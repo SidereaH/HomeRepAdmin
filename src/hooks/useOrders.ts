@@ -67,6 +67,8 @@ export function useOrders() {
 		createOrder: ordersApi.createOrder,
 		updateOrder,
 
+		deleteOrder: ordersApi.deleteOrder,
+
 		// Работники
 		findWorker: async (params: FindWorkerParams) => {
 			const workerId = await ordersApi.findWorker(params)

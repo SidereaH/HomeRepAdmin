@@ -4,8 +4,14 @@ import { useOrders } from '../../../hooks/useOrders'
 import Spinner from '../../../components/ui/Spinner'
 
 export default function OrdersList() {
-	const { orders, refetchOrders, foundWorker, assignWorker, findWorker } =
-		useOrders()
+	const {
+		orders,
+		refetchOrders,
+		foundWorker,
+		assignWorker,
+		findWorker,
+		deleteOrder,
+	} = useOrders()
 	const [loading, setLoading] = createSignal(false)
 	const [error, setError] = createSignal('')
 	const navigate = useNavigate()
@@ -21,6 +27,12 @@ export default function OrdersList() {
 		}
 	}
 
+	const handleDelete = async (id: number) => {
+		if (confirm('Are you sure you want to delete this order?')) {
+			await deleteOrder(id)
+			await refetchOrders()
+		}
+	}
 	const handleAssignWorker = async (orderId: number) => {
 		if (!foundWorker()) return
 
@@ -129,6 +141,13 @@ export default function OrdersList() {
 													</button>
 												</Show>
 											</Show>
+											<button
+												onClick={() => handleDelete(order.id)}
+												disabled={loading()}
+												class='text-green-600 hover:text-green-900 disabled:opacity-50'
+											>
+												Delete
+											</button>
 										</td>
 									</tr>
 								)}

@@ -55,6 +55,9 @@ export const ordersApi = {
 		fetchApi<Order>(`/orders/order/${id}`),
 	updateOrder: (id: number, order: Order): Promise<Order> =>
 		fetchApi<Order>(`/orders`, 'PUT', order),
+	deleteOrder: (orderId: number): Promise<void> =>
+		fetchApi<void>(`/orders/${orderId}`, 'DELETE'),
+
 	findWorker: (params: FindWorkerParams): Promise<number> =>
 		fetchApi<number>('/orders/order/findWorker', 'POST', null, {
 			orderID: params.orderId,
