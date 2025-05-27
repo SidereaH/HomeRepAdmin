@@ -1,3 +1,7 @@
+### HomeRep Admin-panel
+
+[![wakatime](https://wakatime.com/badge/user/ce63b378-df01-4480-af66-a4f584b910ad/project/2b9ae44d-3aee-41d7-8364-ba7f79e48fc7.svg)](https://wakatime.com/badge/user/ce63b378-df01-4480-af66-a4f584b910ad/project/2b9ae44d-3aee-41d7-8364-ba7f79e48fc7)
+
 ## Usage
 
 Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
